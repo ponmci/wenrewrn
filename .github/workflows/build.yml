@@ -17,38 +17,50 @@ jobs:
 
       - name: Install Theos
         run: |
-          # Install Theos to home directory
           export THEOS=~/theos
-          git clone --recursive https://github.com/theos/theos.git $THEOS
 
-          # Get iOS SDK
+          # Clone Theos
+          git clone --recursive https://github.com/theos/theos.git $THEOS 2>&1
+
+          # Get iOS SDK (iPhoneOS16.5.sdk)
           mkdir -p $THEOS/sdks
-          curl -LO https://github.com/theos/sdks/archive/master.zip
-          unzip master.zip
-          cp -r sdks-master/*.sdk $THEOS/sdks/
+          curl -sLO https://github.com/theos/sdks/archive/master.zip
+          unzip -qo master.zip
+          cp -rn sdks-master/*.sdk $THEOS/sdks/ 2>/dev/null || true
           rm -rf sdks-master master.zip
 
+          # Verify
+          echo "Theos installed: $(ls $THEOS/bin/nic.pl 2>/dev/null && echo OK || echo MISSING)"
+          echo "SDKs:"
+          ls $THEOS/sdks/ 2>/dev/null || echo "No SDKs found"
+
+          # Set env for next steps
           echo "THEOS=$THEOS" >> $GITHUB_ENV
           echo "PATH=$THEOS/bin:$PATH" >> $GITHUB_ENV
 
       - name: Build
+        env:
+          THEOS: ~/theos
         run: |
+          export THEOS=~/theos
+          export PATH=$THEOS/bin:$PATH
+
           cd RobloxExecutor
-          make clean
-          make FINALPACKAGE=1
 
-      - name: Upload .deb artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: RobloxExecutor-deb
-          path: RobloxExecutor/packages/*.deb
-          retention-days: 30
+          # Check if nic.pl exists
+          which nic.pl || echo "nic.pl not in PATH"
+          ls ~/theos/bin/ || echo "theos/bin missing"
 
-      - name: Upload dylib artifact
+          # Build
+          make clean 2>&1 || true
+          make FINALPACKAGE=1 2>&1
+
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: RobloxExecutor-dylib
+          name: RobloxExecutor-build
           path: |
-            RobloxExecutor/.theos/obj/debug/*.dylib
-            RobloxExecutor/.theos/obj/release/*.dylib
+            RobloxExecutor/packages/*.deb
+            RobloxExecutor/.theos/obj/**/*.dylib
           retention-days: 30
