@@ -34,6 +34,9 @@ jobs:
           echo "SDKs:"
           ls $THEOS/sdks/ 2>/dev/null || echo "No SDKs found"
 
+          # Install ldid (fake codesign for iOS tweaks)
+          brew install ldid 2>&1
+
           # Set env for next steps
           echo "THEOS=$THEOS" >> $GITHUB_ENV
           echo "PATH=$THEOS/bin:$PATH" >> $GITHUB_ENV
