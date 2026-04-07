@@ -50,13 +50,18 @@ jobs:
 
           cd RobloxExecutor
 
-          # Check if nic.pl exists
-          which nic.pl || echo "nic.pl not in PATH"
-          ls ~/theos/bin/ || echo "theos/bin missing"
-
-          # Build
+          # Build the dylib
           make clean 2>&1 || true
           make FINALPACKAGE=1 2>&1
+
+          # Explicitly package into .deb
+          make package FINALPACKAGE=1 2>&1
+
+          # List what was produced
+          echo "=== packages/ ==="
+          find packages/ -type f 2>/dev/null || echo "packages/ is empty or missing"
+          echo "=== .theos/obj/ ==="
+          find .theos/obj/ -name "*.dylib" 2>/dev/null || echo "no dylib found"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
