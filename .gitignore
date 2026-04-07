@@ -1,7 +1,3 @@
+tmpclaude-*
 .theos/
 packages/
-*.deb
-*.dylib
-.DS_Store
-*.o
-*.swp
