@@ -3,6 +3,10 @@
 
 #import <Foundation/Foundation.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // Lua state type (opaque pointer)
 typedef void* lua_State;
 
@@ -18,10 +22,10 @@ typedef void (*lua_pushstring_t)(lua_State *L, const char *s);
 typedef void (*lua_pushcclosure_t)(lua_State *L, void(*fn)(void*), int n);
 
 // Global state
-extern lua_State *g_L;           // Main Lua state pointer
-extern uintptr_t g_base;         // RobloxLib base address
-extern BOOL g_vmFound;           // Whether we found the VM
-extern BOOL g_ready;             // Ready to execute scripts
+extern lua_State *g_L;
+extern uintptr_t g_base;
+extern BOOL g_vmFound;
+extern BOOL g_ready;
 
 // Original function pointers (for calling through)
 extern lua_resume_t orig_lua_resume;
@@ -41,5 +45,9 @@ int ExecuteScript(const char *script, const char *name);
 
 // Get the main Lua state
 lua_State* GetLuaState(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
