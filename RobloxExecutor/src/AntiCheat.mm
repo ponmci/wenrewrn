@@ -4,8 +4,10 @@
 #import "AntiCheat.h"
 #import <substrate.h>
 #import <sys/sysctl.h>
+#import <sys/stat.h>
 #import <dlfcn.h>
 #import <mach-o/dyld.h>
+#import <unistd.h>
 
 // ============================================================
 // STRAIGHTFORWARD PATCHES
