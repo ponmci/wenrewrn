@@ -5,7 +5,6 @@
 #import "LuaVMHook.h"
 #import <UIKit/UIKit.h>
 
-static char scriptBuffer[16384] = "";
 static NSMutableArray *outputLog = nil;
 static BOOL menuVisible = NO;
 static UIWindow *overlayWindow = nil;
