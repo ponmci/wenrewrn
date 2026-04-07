@@ -1,0 +1,54 @@
+name: Build RobloxExecutor
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Theos
+        run: |
+          # Install Theos to home directory
+          export THEOS=~/theos
+          git clone --recursive https://github.com/theos/theos.git $THEOS
+
+          # Get iOS SDK
+          mkdir -p $THEOS/sdks
+          curl -LO https://github.com/theos/sdks/archive/master.zip
+          unzip master.zip
+          cp -r sdks-master/*.sdk $THEOS/sdks/
+          rm -rf sdks-master master.zip
+
+          echo "THEOS=$THEOS" >> $GITHUB_ENV
+          echo "PATH=$THEOS/bin:$PATH" >> $GITHUB_ENV
+
+      - name: Build
+        run: |
+          cd RobloxExecutor
+          make clean
+          make FINALPACKAGE=1
+
+      - name: Upload .deb artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RobloxExecutor-deb
+          path: RobloxExecutor/packages/*.deb
+          retention-days: 30
+
+      - name: Upload dylib artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RobloxExecutor-dylib
+          path: |
+            RobloxExecutor/.theos/obj/debug/*.dylib
+            RobloxExecutor/.theos/obj/release/*.dylib
+          retention-days: 30

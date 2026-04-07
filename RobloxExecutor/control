@@ -1,0 +1,9 @@
+Package: com.robloxexecutor
+Name: RobloxExecutor
+Depends: mobilesubstrate, firmware (>= 14.0)
+Version: 1.0.0
+Architecture: iphoneos-arm
+Description: Roblox Lua script executor for iOS.
+Maintainer: poncipp
+Author: poncipp
+Section: Tweaks
