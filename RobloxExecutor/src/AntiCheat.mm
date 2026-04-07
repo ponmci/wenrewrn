@@ -182,8 +182,14 @@ void AntiCheatBypass() {
     NSLog(@"[RobloxExecutor] Hooked fopen()");
 
     // Hook stat()
-    MSHookFunction((void*)(int(*)(const char*, struct stat*))stat, (void*)hooked_stat, (void**)&orig_stat);
-    NSLog(@"[RobloxExecutor] Hooked stat()");
+    // Hook stat() - use dlsym to avoid name conflict with struct stat
+    {
+        void *stat_ptr = dlsym(RTLD_DEFAULT, "stat");
+        if (stat_ptr) {
+            MSHookFunction(stat_ptr, (void*)hooked_stat, (void**)&orig_stat);
+            NSLog(@"[RobloxExecutor] Hooked stat()");
+        }
+    }
 
     // Hook dlopen
     MSHookFunction((void*)dlopen, (void*)hooked_dlopen, (void**)&orig_dlopen);
