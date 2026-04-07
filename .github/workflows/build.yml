@@ -64,6 +64,6 @@ jobs:
         with:
           name: RobloxExecutor-build
           path: |
-            RobloxExecutor/packages/*.deb
-            RobloxExecutor/.theos/obj/**/*.dylib
+            RobloxExecutor/packages/**
+            RobloxExecutor/.theos/obj/**
           retention-days: 30
